@@ -10,4 +10,4 @@ export type CartItem = {
   unitPrice: number;
 };
 
-export const CART_KEY = "nova-cart-v1";
+export const CART_KEY = "nova-cart-v2";

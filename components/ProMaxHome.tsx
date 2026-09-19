@@ -3,365 +3,132 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import styles from "./ProMaxHome.module.css";
 import { useCart } from "./CartProvider";
 import { formatPrice, iphone17ProMax, type FinishId, type Storage } from "@/lib/products";
-import { useRouter } from "next/navigation";
+import styles from "./ProMaxHome.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const { image: HERO_IMAGE, cameraImage: CAMERA_IMAGE, finishes, prices: storagePrices } = iphone17ProMax;
+const layerLabels = ["Front Glass", "Super Retina XDR Display", "Frame", "Battery", "A19 Pro", "48MP Camera System", "Rear Housing"];
+
+function ExteriorCrop({ side }: { side: "front" | "rear" }) {
+  return <div className={`${styles.exteriorCrop} ${side === "front" ? styles.frontCrop : styles.rearCrop}`}><img src={side === "front" ? iphone17ProMax.images.hero : iphone17ProMax.images.finishes} alt="" /></div>;
+}
 
 export default function ProMaxHome() {
   const heroRef = useRef<HTMLElement>(null);
   const heroVisualRef = useRef<HTMLDivElement>(null);
   const teardownRef = useRef<HTMLElement>(null);
-  const [storage, setStorage] = useState<Storage>("256 GB");
+  const [storage, setStorage] = useState<Storage>("256GB");
   const [finish, setFinish] = useState<FinishId>("cosmic-orange");
   const [quantity, setQuantity] = useState(1);
-  const [added, setAdded] = useState(false);
   const { addItem, openDrawer } = useCart();
   const router = useRouter();
-
-  const selectedFinish = useMemo(
-    () => finishes.find((item) => item.id === finish) ?? finishes[1],
-    [finish],
-  );
+  const selectedFinish = useMemo(() => iphone17ProMax.finishes.find(item => item.id === finish)!, [finish]);
+  const unitPrice = iphone17ProMax.prices[storage];
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) return;
-
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !heroRef.current || !heroVisualRef.current) return;
     const hero = heroRef.current;
     const visual = heroVisualRef.current;
-    if (!hero || !visual) return;
-
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        "[data-hero-copy]",
-        { y: 28, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: "power3.out" },
-      );
-      gsap.fromTo(
-        visual,
-        { y: 55, scale: 0.92, rotateY: -7, opacity: 0 },
-        { y: 0, scale: 1, rotateY: 0, opacity: 1, duration: 1.35, ease: "power3.out" },
-      );
-      gsap.fromTo(
-        "[data-light-sweep]",
-        { xPercent: -140, opacity: 0 },
-        { xPercent: 145, opacity: 0.7, duration: 1.6, ease: "power2.inOut", delay: 0.25 },
-      );
+      gsap.from("[data-hero-copy]", { y: 28, opacity: 0, duration: .9, stagger: .1, ease: "power3.out" });
+      gsap.from(visual, { y: 45, scale: .93, rotateY: -5, opacity: 0, duration: 1.3, ease: "power3.out" });
+      gsap.fromTo("[data-light-sweep]", { xPercent: -150, opacity: 0 }, { xPercent: 160, opacity: .65, duration: 1.6, delay: .35 });
     }, hero);
-
-    const onMove = (event: MouseEvent) => {
+    const move = (event: PointerEvent) => {
+      if (matchMedia("(max-width: 800px)").matches) return;
       const rect = hero.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      gsap.to(visual, {
-        x: x * 18,
-        y: y * 12,
-        rotateY: x * 3,
-        rotateX: y * -2,
-        duration: 0.6,
-        ease: "power2.out",
-      });
+      gsap.to(visual, { x: ((event.clientX - rect.left) / rect.width - .5) * 16, y: ((event.clientY - rect.top) / rect.height - .5) * 10, duration: .7 });
     };
-
-    const onLeave = () => {
-      gsap.to(visual, {
-        x: 0,
-        y: 0,
-        rotateY: 0,
-        rotateX: 0,
-        duration: 0.7,
-        ease: "power3.out",
-      });
-    };
-
-    hero.addEventListener("mousemove", onMove);
-    hero.addEventListener("mouseleave", onLeave);
-
-    return () => {
-      hero.removeEventListener("mousemove", onMove);
-      hero.removeEventListener("mouseleave", onLeave);
-      ctx.revert();
-    };
+    hero.addEventListener("pointermove", move);
+    return () => { hero.removeEventListener("pointermove", move); ctx.revert(); };
   }, []);
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) return;
-
+    if (!teardownRef.current || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = teardownRef.current;
-    if (!root) return;
-
+    const layers = gsap.utils.toArray<HTMLElement>("[data-layer]", root);
+    const labels = gsap.utils.toArray<HTMLElement>("[data-layer-label]", root);
     const mm = gsap.matchMedia();
-    const layers = Array.from(root.querySelectorAll<HTMLElement>("[data-layer]"));
-    const labels = Array.from(root.querySelectorAll<HTMLElement>("[data-layer-label]"));
-
     mm.add("(min-width: 760px)", () => {
-      const spread = [-330, -220, -105, 15, 125, 240, 345];
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: root,
-          start: "top top",
-          end: "+=1800",
-          scrub: 0.75,
-          pin: "[data-teardown-pin]",
-          anticipatePin: 1,
-        },
-      });
-
-      timeline
-        .to(
-          layers,
-          {
-            x: (index) => spread[index] ?? 0,
-            rotateY: (index) => (index - 3) * 2.2,
-            scale: (index) => 1 - Math.abs(index - 3) * 0.018,
-            duration: 1,
-            ease: "power2.inOut",
-          },
-          0,
-        )
-        .fromTo(
-          labels,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, stagger: 0.07, duration: 0.4 },
-          0.42,
-        )
-        .to(
-          "[data-teardown-copy]",
-          { opacity: 0.15, y: -16, duration: 0.4 },
-          0.5,
-        )
-        .to(
-          layers,
-          {
-            x: 0,
-            rotateY: 0,
-            scale: 1,
-            duration: 0.9,
-            ease: "power2.inOut",
-          },
-          1.35,
-        )
-        .to(labels, { opacity: 0, duration: 0.25 }, 1.35);
-
-      return () => timeline.kill();
+      const x = [-420, -285, -150, -18, 125, 265, 405];
+      const y = [-34, 28, -20, 42, -45, 28, -12];
+      const z = [180, 120, 50, 0, -50, -100, -160];
+      const tl = gsap.timeline({ scrollTrigger: { trigger: root, start: "top top", end: "+=3000", scrub: .7, pin: "[data-teardown-pin]", anticipatePin: 1 } });
+      layers.slice(2, 6).forEach(layer => gsap.set(layer, { opacity: 0 }));
+      layers.forEach((layer, index) => tl.to(layer, { x: x[index], y: y[index], z: z[index], rotateY: (index - 3) * 3.5, rotateX: index % 2 ? 2 : -2, opacity: 1, duration: .72, ease: "power2.inOut" }, index * .34));
+      tl.to(labels, { opacity: 1, y: 0, stagger: .05, duration: .4 }, 1.45)
+        .to({}, { duration: 1.2 })
+        .to(labels, { opacity: 0, duration: .25 })
+        .to(layers, { x: 0, y: 0, z: 0, rotateX: 0, rotateY: 0, opacity: (index) => index > 1 && index < 6 ? 0 : 1, stagger: .04, duration: 1.15, ease: "power3.inOut" });
+      return () => tl.kill();
     });
-
     mm.add("(max-width: 759px)", () => {
-      gsap.fromTo(
-        layers,
-        { y: 0, opacity: 0.6 },
-        {
-          y: (index) => (index - 3) * 34,
-          opacity: 1,
-          stagger: 0.04,
-          ease: "none",
-          scrollTrigger: {
-            trigger: root,
-            start: "top 70%",
-            end: "bottom 35%",
-            scrub: 0.6,
-          },
-        },
-      );
+      const x = [-84, -56, -28, 0, 28, 56, 84];
+      const y = [-126, -84, -42, 0, 42, 84, 126];
+      layers.slice(2, 6).forEach(layer => gsap.set(layer, { opacity: 0 }));
+      const tl = gsap.timeline({ scrollTrigger: { trigger: root, start: "top top", end: "+=2200", scrub: .6, pin: "[data-teardown-pin]", anticipatePin: 1 } });
+      layers.forEach((layer, index) => tl.to(layer, { x: x[index], y: y[index], z: (3 - index) * 18, rotateZ: (index - 3) * 1.5, scale: .72, opacity: 1, duration: .7 }, index * .3));
+      tl.to(labels, { opacity: 1, stagger: .05, duration: .35 }, 1.2).to({}, { duration: 1 }).to(labels, { opacity: 0 }).to(layers, { x: 0, y: 0, z: 0, rotateZ: 0, scale: 1, opacity: (index) => index > 1 && index < 6 ? 0 : 1, duration: 1 });
+      return () => tl.kill();
     });
-
     return () => mm.revert();
   }, []);
 
-  const handleAdd = (open = true) => {
-    addItem({ productSlug: iphone17ProMax.slug, name: iphone17ProMax.name, color: finish, storage, quantity, unitPrice: storagePrices[storage] });
+  const add = (open: boolean) => {
+    addItem({ productSlug: iphone17ProMax.slug, name: iphone17ProMax.name, color: finish, storage, quantity, unitPrice });
     if (open) openDrawer();
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1800);
   };
 
-  return (
-    <div className={styles.page}>
-      <section className={styles.hero} ref={heroRef}>
-        <div className={styles.heroGlow} />
-        <div className={styles.heroCopy}>
-          <span className={styles.kicker} data-hero-copy>IPHONE 17 PRO MAX</span>
-          <h1 data-hero-copy>Pro power.<br />Max canvas.</h1>
-          <p className={styles.heroSub} data-hero-copy>
-            6.9-inch Super Retina XDR. A19 Pro. Three 48MP Fusion cameras.
-          </p>
-          <div className={styles.heroPrice} data-hero-copy>From €1,469</div>
-          <div className={styles.heroActions} data-hero-copy>
-            <a className={styles.primaryButton} href="#configure">Buy now</a>
-            <a className={styles.secondaryButton} href="#inside">See inside</a>
-          </div>
+  return <div className={styles.page}>
+    <section className={styles.hero} ref={heroRef}>
+      <div className={styles.heroCopy}>
+        <span className={styles.kicker} data-hero-copy>{iphone17ProMax.name}</span>
+        <h1 data-hero-copy>{iphone17ProMax.tagline}</h1>
+        <p data-hero-copy>{iphone17ProMax.description}</p>
+        <strong data-hero-copy>From {formatPrice(iphone17ProMax.prices["256GB"])}</strong>
+        <div className={styles.actions} data-hero-copy><a className={styles.primary} href="#configure">Buy now</a><a className={styles.secondary} href="#inside">Explore</a></div>
+      </div>
+      <div className={styles.heroVisual} ref={heroVisualRef}><div className={styles.lightSweep} data-light-sweep /><img src={iphone17ProMax.images.hero} alt="Front and back of iPhone 17 Pro Max in Cosmic Orange" /></div>
+    </section>
+
+    <section className={styles.teardown} id="inside" ref={teardownRef}>
+      <div className={styles.teardownPin} data-teardown-pin>
+        <div className={styles.teardownHeading}><span className={styles.kicker}>ENGINEERED INSIDE OUT</span><h2>Precision,<br />layer by layer.</h2><p>Scroll to separate the display, chassis and internal architecture.</p></div>
+        <div className={styles.deviceStage} aria-label="Exploded iPhone 17 Pro Max with seven component layers">
+          <div className={`${styles.phoneLayer} ${styles.glassLayer}`} data-layer><div className={styles.glassRim} /><span data-layer-label>{layerLabels[0]}</span></div>
+          <div className={`${styles.phoneLayer} ${styles.displayLayer}`} data-layer><ExteriorCrop side="front" /><span data-layer-label>{layerLabels[1]}</span></div>
+          <div className={`${styles.phoneLayer} ${styles.componentLayer}`} data-layer><img src={iphone17ProMax.images.chassis} alt="Detailed internal aluminium chassis" /><span data-layer-label>{layerLabels[2]}</span></div>
+          <div className={`${styles.phoneLayer} ${styles.componentLayer} ${styles.batteryLayer}`} data-layer><img src={iphone17ProMax.images.battery} alt="Phone-shaped lithium-ion battery component" /><span data-layer-label>{layerLabels[3]}</span></div>
+          <div className={`${styles.phoneLayer} ${styles.componentLayer} ${styles.boardLayer}`} data-layer><img src={iphone17ProMax.images.logicBoard} alt="Detailed logic board with A19 Pro chip" /><span data-layer-label>{layerLabels[4]}</span></div>
+          <div className={`${styles.phoneLayer} ${styles.componentLayer} ${styles.cameraLayer}`} data-layer><img src={iphone17ProMax.images.cameraModule} alt="Triple 48MP camera module" /><span data-layer-label>{layerLabels[5]}</span></div>
+          <div className={`${styles.phoneLayer} ${styles.rearLayer}`} data-layer><ExteriorCrop side="rear" /><span data-layer-label>{layerLabels[6]}</span></div>
         </div>
+        <div className={styles.progress}>SCROLL TO DISASSEMBLE</div>
+      </div>
+    </section>
 
-        <div className={styles.heroVisual} ref={heroVisualRef}>
-          <div className={styles.lightSweep} data-light-sweep />
-          <img src={HERO_IMAGE} alt="iPhone 17 Pro Max in Cosmic Orange" />
-          <span className={styles.imageNote}>Conceptual product rendering</span>
-        </div>
-      </section>
+    <section className={styles.highlights} id="features">
+      <article className={styles.highlight}><div><span className={styles.kicker}>CAMERA</span><h2>Three Fusion cameras. Every angle, Pro.</h2><p>A 48MP Pro Fusion system designed for extraordinary detail from macro to telephoto.</p></div><img src={iphone17ProMax.images.camera} alt="Official close-up of the iPhone 17 Pro Max camera system" /></article>
+      <article className={`${styles.highlight} ${styles.displayHighlight}`}><div><span className={styles.kicker}>DISPLAY</span><h2>6.9 inches of immersive ProMotion.</h2><p>Super Retina XDR with up to 120Hz and outstanding outdoor brightness.</p></div><div className={styles.realDisplay}><ExteriorCrop side="front" /></div></article>
+      <article className={`${styles.highlight} ${styles.performanceHighlight}`}><div><span className={styles.kicker}>PERFORMANCE</span><h2>A19 Pro. Built to sustain speed.</h2><p>Apple silicon and vapor-chamber cooling deliver powerful, consistent performance.</p></div><img src={iphone17ProMax.images.logicBoard} alt="A19 Pro chip on a detailed logic board" /></article>
+    </section>
 
-      <section className={styles.teardown} id="inside" ref={teardownRef}>
-        <div className={styles.teardownPin} data-teardown-pin>
-          <div className={styles.teardownCopy} data-teardown-copy>
-            <span className={styles.kicker}>ENGINEERED INSIDE OUT</span>
-            <h2>Scroll through<br />the hardware.</h2>
-            <p>A conceptual layered view inspired by the real iPhone 17 Pro Max architecture.</p>
-          </div>
+    <section className={styles.configurator} id="configure">
+      <div className={styles.configVisual} style={{ "--finish": selectedFinish.hex } as React.CSSProperties}><img src={iphone17ProMax.images.finishes} alt={`Official iPhone 17 Pro Max finish lineup, ${selectedFinish.name} selected`} /><span>{selectedFinish.name}</span></div>
+      <div className={styles.configPanel}><span className={styles.kicker}>CONFIGURE</span><h2>Make it yours.</h2>
+        <fieldset><legend>Finish <b>{selectedFinish.name}</b></legend><div className={styles.finishRow}>{iphone17ProMax.finishes.map(item => <button key={item.id} className={finish === item.id ? styles.selectedSwatch : ""} onClick={() => setFinish(item.id)} aria-label={item.name} aria-pressed={finish === item.id}><i style={{ background: item.hex }} /></button>)}</div></fieldset>
+        <fieldset><legend>Storage</legend><div className={styles.storageGrid}>{iphone17ProMax.storage.map(item => <button key={item} className={storage === item ? styles.selectedStorage : ""} onClick={() => setStorage(item)}><b>{item}</b><span>{formatPrice(iphone17ProMax.prices[item])}</span></button>)}</div></fieldset>
+        <div className={styles.purchase}><div className={styles.quantity}><button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">−</button><output>{quantity}</output><button onClick={() => setQuantity(Math.min(9, quantity + 1))} aria-label="Increase quantity">+</button></div><div><span>Total</span><strong>{formatPrice(unitPrice * quantity)}</strong></div></div>
+        <button className={styles.primary} onClick={() => add(true)}>Add to cart</button><button className={styles.buyNow} onClick={() => { add(false); router.push("/checkout"); }}>Buy now</button>
+      </div>
+    </section>
 
-          <div className={styles.deviceStage} aria-label="Conceptual exploded view of iPhone 17 Pro Max">
-            <div className={[styles.hardwareLayer, styles.frontGlass].join(" ")} data-layer>
-              <div className={styles.dynamicIsland} />
-              <span data-layer-label>Front glass</span>
-            </div>
-            <div className={[styles.hardwareLayer, styles.displayLayer].join(" ")} data-layer>
-              <div className={styles.displayGlow} />
-              <span data-layer-label>Super Retina XDR</span>
-            </div>
-            <div className={[styles.hardwareLayer, styles.frameLayer].join(" ")} data-layer>
-              <span data-layer-label>Aluminium unibody</span>
-            </div>
-            <div className={[styles.hardwareLayer, styles.batteryLayer].join(" ")} data-layer>
-              <div className={styles.batteryCell}>BATTERY</div>
-              <span data-layer-label>Battery</span>
-            </div>
-            <div className={[styles.hardwareLayer, styles.logicLayer].join(" ")} data-layer>
-              <div className={styles.a19Chip}>A19 PRO</div>
-              <span data-layer-label>A19 Pro + vapor chamber</span>
-            </div>
-            <div className={[styles.hardwareLayer, styles.cameraLayer].join(" ")} data-layer>
-              <div className={styles.cameraCluster}><i /><i /><i /></div>
-              <span data-layer-label>48MP Fusion cameras</span>
-            </div>
-            <div className={[styles.hardwareLayer, styles.rearLayer].join(" ")} data-layer>
-              <div className={styles.rearPlate}>PRO MAX</div>
-              <span data-layer-label>Rear housing</span>
-            </div>
-          </div>
-
-          <div className={styles.scrollHint}>SCROLL TO EXPLODE ↓</div>
-        </div>
-      </section>
-
-      <section className={styles.highlights} id="features">
-        <article className={[styles.highlight, styles.cameraHighlight].join(" ")}>
-          <div>
-            <span className={styles.kicker}>CAMERA</span>
-            <h2>Three 48MP Fusion cameras.</h2>
-            <p>More room to frame, crop and get closer without cluttering the experience.</p>
-          </div>
-          <img src={CAMERA_IMAGE} alt="Close-up of the iPhone 17 Pro Max camera system" />
-        </article>
-
-        <article className={[styles.highlight, styles.displayHighlight].join(" ")}>
-          <div>
-            <span className={styles.kicker}>DISPLAY</span>
-            <h2>6.9 inches of ProMotion.</h2>
-            <p>Super Retina XDR with adaptive refresh rates up to 120Hz.</p>
-          </div>
-          <div className={styles.displayPoster}>
-            <div className={styles.displayIsland} />
-            <div className={styles.displayAura} />
-            <strong>6.9″</strong>
-            <span>Super Retina XDR</span>
-          </div>
-        </article>
-
-        <article className={[styles.highlight, styles.performanceHighlight].join(" ")}>
-          <div>
-            <span className={styles.kicker}>PERFORMANCE</span>
-            <h2>A19 Pro, cooled for sustained speed.</h2>
-            <p>Built around Apple silicon and a vapor-chamber thermal system.</p>
-          </div>
-          <div className={styles.chipPoster}>
-            <small>APPLE SILICON</small>
-            <strong>A19</strong>
-            <span>PRO</span>
-          </div>
-        </article>
-      </section>
-
-      <section className={styles.configurator} id="configure">
-        <div className={styles.configVisual}>
-          <img src={HERO_IMAGE} alt="iPhone 17 Pro Max product view" />
-          <span>{selectedFinish.name}</span>
-        </div>
-
-        <div className={styles.configPanel}>
-          <span className={styles.kicker}>CONFIGURE</span>
-          <h2>Choose your iPhone 17 Pro Max.</h2>
-
-          <div className={styles.optionGroup}>
-            <div className={styles.optionHead}><span>Finish</span><b>{selectedFinish.name}</b></div>
-            <div className={styles.finishRow}>
-              {finishes.map((item) => (
-                <button
-                  key={item.id}
-                  className={finish === item.id ? styles.activeSwatch : styles.swatch}
-                  onClick={() => setFinish(item.id)}
-                  aria-label={item.name}
-                  aria-pressed={finish === item.id}
-                >
-                  <i style={{ background: item.hex }} />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.optionGroup}>
-            <div className={styles.optionHead}><span>Storage</span><b>{storage}</b></div>
-            <div className={styles.storageGrid}>
-              {(Object.keys(storagePrices) as Storage[]).map((item) => (
-                <button
-                  key={item}
-                  className={storage === item ? styles.activeStorage : styles.storage}
-                  onClick={() => setStorage(item)}
-                >
-                  <b>{item}</b><span>{formatPrice(storagePrices[item])}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.purchaseRow}>
-            <div className={styles.quantity}>
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">−</button>
-              <output>{quantity}</output>
-              <button onClick={() => setQuantity(Math.min(9, quantity + 1))} aria-label="Increase quantity">+</button>
-            </div>
-            <div className={styles.total}><span>Total</span><b>{formatPrice(storagePrices[storage] * quantity)}</b></div>
-          </div>
-
-          <button className={styles.primaryButton} onClick={() => handleAdd()}>
-            {added ? "Configuration saved" : "Add to cart"}
-          </button>
-          <button className={styles.secondaryBuy} onClick={() => { handleAdd(false); router.push("/checkout"); }}>Buy now</button>
-          <p className={styles.configNote}>Free delivery. VAT included. Your configuration is saved securely on this device.</p>
-        </div>
-      </section>
-
-      <section className={styles.specSection}>
-        <div className={styles.specIntro}>
-          <span className={styles.kicker}>TECH SPECS</span>
-          <h2>Only the details you need.</h2>
-        </div>
-        <div className={styles.specList}>
-          {Object.entries(iphone17ProMax.specs).map(([label, value]) => <details key={label}><summary>{label} <span>+</span></summary><p>{value}</p></details>)}
-        </div>
-      </section>
-
-      <section className={styles.benefits}>
-        <div><strong>Fast delivery</strong><span>Across Spain</span></div>
-        <div><strong>Warranty</strong><span>Dedicated support</span></div>
-        <div><strong>Secure payment</strong><span>Protected checkout</span></div>
-        <div><strong>Easy returns</strong><span>Simple process</span></div>
-      </section>
-    </div>
-  );
+    <section className={styles.specs}><div><span className={styles.kicker}>TECH SPECS</span><h2>Essential details.</h2></div><div>{Object.entries(iphone17ProMax.specs).map(([label, text]) => <details key={label}><summary>{label}<span>+</span></summary><p>{text}</p></details>)}</div></section>
+    <section className={styles.benefits}><div><b>Complimentary delivery</b><span>Tracked to your door</span></div><div><b>Apple warranty</b><span>One year limited warranty</span></div><div><b>Secure payment</b><span>Protected checkout</span></div><div><b>Easy returns</b><span>Clear, simple process</span></div></section>
+  </div>;
 }
