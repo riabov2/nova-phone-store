@@ -45,6 +45,15 @@ jobs:
           download_image \
             "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-color-lineup-250909_inline.jpg.large_2x.jpg" \
             "$destination/iphone-17-pro-max-finishes.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-TechWoven-Case-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-design.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-iOS-26-Liquid-Glass-Lock-Screen-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-display.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-Clear-Case-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-performance.jpg"
 
       - name: Switch the storefront to local assets
         shell: bash
@@ -59,6 +68,9 @@ jobs:
               'officialProductImages.hero': 'productAssetPath("iphone-17-pro-max-hero.jpg")',
               'officialProductImages.camera': 'productAssetPath("iphone-17-pro-max-camera.jpg")',
               'officialProductImages.finishes': 'productAssetPath("iphone-17-pro-max-finishes.jpg")',
+              'officialProductImages.design': 'productAssetPath("iphone-17-pro-max-design.jpg")',
+              'officialProductImages.display': 'productAssetPath("iphone-17-pro-max-display.jpg")',
+              'officialProductImages.performance': 'productAssetPath("iphone-17-pro-max-performance.jpg")',
           }
           for remote_reference, local_reference in replacements.items():
               if remote_reference not in source:

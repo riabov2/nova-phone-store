@@ -21,12 +21,13 @@ npm run build
 ## Routes
 
 - `/` — flagship product experience and configurator
-- `/phones` — focused product overview
+- `/phones` — multi-brand catalog grouped by manufacturer
+- `/product/iphone-17-pro` — official iPhone 17 Pro editorial page
 - `/product/iphone-17-pro-max` — product experience
 - `/cart` — persistent cart
 - `/checkout` — static demo checkout
 
-Product data lives in `lib/products.ts`. Official Apple product photography is vendored into `public/products/iphone-17-pro-max/`. The cart persists in `localStorage`; checkout does not process payments.
+Commerce data for iPhone 17 Pro Max lives in `lib/products.ts`; the wider verified catalog and official-source links live in `lib/catalog.ts`. Products without a complete official regional information package remain explicitly marked “Coming Soon.” Official Apple product photography is vendored into `public/products/iphone-17-pro-max/`. The cart persists in `localStorage`; checkout does not process payments.
 
 ## One-time image vendoring
 

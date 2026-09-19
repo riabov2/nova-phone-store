@@ -6,6 +6,9 @@ const officialProductImages = {
   hero: "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-cosmic-orange-250909_inline.jpg.large_2x.jpg",
   camera: "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-camera-close-up-250909_big.jpg.large_2x.jpg",
   finishes: "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-color-lineup-250909_inline.jpg.large_2x.jpg",
+  design: "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-TechWoven-Case-250909_inline.jpg.large_2x.jpg",
+  display: "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-iOS-26-Liquid-Glass-Lock-Screen-250909_inline.jpg.large_2x.jpg",
+  performance: "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-Clear-Case-250909_inline.jpg.large_2x.jpg",
 } as const;
 
 export const iphone17ProMax = {
@@ -26,6 +29,9 @@ export const iphone17ProMax = {
     hero: officialProductImages.hero,
     camera: officialProductImages.camera,
     finishes: officialProductImages.finishes,
+    design: officialProductImages.design,
+    display: officialProductImages.display,
+    performance: officialProductImages.performance,
   },
   specs: {
     Display: "6.9-inch Super Retina XDR display with ProMotion up to 120Hz, Always-On and 3000 nits peak outdoor brightness.",

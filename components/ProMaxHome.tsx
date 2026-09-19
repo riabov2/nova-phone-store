@@ -67,13 +67,13 @@ export default function ProMaxHome() {
 
     <section className={`${styles.story} ${styles.designStory}`} id="design" data-story>
       <div data-story-copy><span className={styles.kicker}>DESIGN</span><h2>Forged for Pro.</h2><p>A strong, light aluminium unibody pairs with Ceramic Shield 2 on the front and Ceramic Shield on the back.</p></div>
-      <img src={iphone17ProMax.images.finishes} alt="Official iPhone 17 Pro Max lineup in Deep Blue, Cosmic Orange and Silver" />
+      <img src={iphone17ProMax.images.design} alt="Official iPhone 17 Pro Max TechWoven case and product photography" />
     </section>
 
     <section className={styles.highlights} id="features">
       <article className={styles.highlight} data-story><div data-story-copy><span className={styles.kicker}>CAMERA</span><h2>Three Fusion cameras. Every angle, Pro.</h2><p>A 48MP Pro Fusion camera system brings extraordinary detail from macro to telephoto.</p></div><img src={iphone17ProMax.images.camera} alt="Official close-up of the iPhone 17 Pro Max camera system" /></article>
-      <article className={`${styles.highlight} ${styles.displayHighlight}`} data-story><div data-story-copy><span className={styles.kicker}>DISPLAY</span><h2>6.9 inches of immersive ProMotion.</h2><p>Super Retina XDR with ProMotion up to 120Hz, Always-On and 3000 nits peak outdoor brightness.</p></div><img src={iphone17ProMax.images.hero} alt="Official front view of iPhone 17 Pro Max showing its Super Retina XDR display" /></article>
-      <article className={`${styles.highlight} ${styles.performanceHighlight}`} data-story><div data-story-copy><span className={styles.kicker}>PERFORMANCE</span><h2>A19 Pro. Powerful by design.</h2><p>A19 Pro and an Apple-designed vapor chamber deliver exceptional sustained performance.</p></div><img src={iphone17ProMax.images.finishes} alt="Official iPhone 17 Pro Max product lineup" /></article>
+      <article className={`${styles.highlight} ${styles.displayHighlight}`} data-story><div data-story-copy><span className={styles.kicker}>DISPLAY</span><h2>6.9 inches of immersive ProMotion.</h2><p>Super Retina XDR with ProMotion up to 120Hz, Always-On and 3000 nits peak outdoor brightness.</p></div><img src={iphone17ProMax.images.display} alt="Official iPhone 17 Pro Max display showing the iOS 26 Lock Screen" /></article>
+      <article className={`${styles.highlight} ${styles.performanceHighlight}`} data-story><div data-story-copy><span className={styles.kicker}>PERFORMANCE</span><h2>A19 Pro. Powerful by design.</h2><p>A19 Pro and an Apple-designed vapor chamber deliver exceptional sustained performance.</p></div><img src={iphone17ProMax.images.performance} alt="Official iPhone 17 Pro Max product photography with Clear Case" /></article>
     </section>
 
     <section className={styles.configurator} id="configure">
