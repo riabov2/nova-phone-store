@@ -3,12 +3,12 @@ import Link from "next/link";
 import { brandOrder, productsByBrand, type CatalogProduct } from "@/lib/catalog";
 
 function ProductCard({ product }: { product: CatalogProduct }) {
-  const detailsHref = product.status === "Available" ? `/product/${product.slug}` : product.officialProductUrl;
+  const detailsHref = `/product/${product.slug}`;
   return <article className="catalog-card">
     <div className="catalog-card-media">
-      {product.image ? <img src={product.image} alt={`Official ${product.model} product photography`} /> : <div className="catalog-pending"><span>{product.brand}</span><b>Official imagery pending</b></div>}
+      <img src={product.image} alt={`Official ${product.model} product photography`} />
     </div>
-    <div className="catalog-card-body"><div className="catalog-card-meta"><span>{product.brand}</span><b className={product.status === "Available" ? "available" : "coming"}>{product.status}</b></div><h3>{product.model}</h3><p>{product.descriptor}</p>{product.storage && <small>{product.storage.join(" · ")}</small>}<Link className="button ghost" href={detailsHref} target={product.status === "Available" ? undefined : "_blank"} rel={product.status === "Available" ? undefined : "noreferrer"}>{product.status === "Available" ? "View details" : "Official source"}</Link></div>
+    <div className="catalog-card-body"><div className="catalog-card-meta"><span>{product.brand}</span></div><h3>{product.model}</h3><p>{product.descriptor}</p>{product.storage && <small>{product.storage.join(" · ")}</small>}<Link className="button ghost" href={detailsHref}>View details</Link></div>
   </article>;
 }
 

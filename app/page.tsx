@@ -1,5 +1,2 @@
-import ProMaxHome from "@/components/ProMaxHome";
-
-export default function Home() {
-  return <ProMaxHome />;
-}
+import StoreHome from "@/components/StoreHome";
+export default function Home() { return <StoreHome />; }
