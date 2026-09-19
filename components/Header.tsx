@@ -1,0 +1,6 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useCart } from "./CartProvider";
+const links = [["Phones","/phones"],["Features","/#features"],["Compare","/#compare"],["Support","/#support"]];
+export default function Header(){const [open,setOpen]=useState(false);const [scrolled,setScrolled]=useState(false);const {count,openDrawer}=useCart();useEffect(()=>{const fn=()=>setScrolled(scrollY>16);fn();addEventListener("scroll",fn,{passive:true});return()=>removeEventListener("scroll",fn)},[]);return <header className={`site-header ${scrolled?"scrolled":""}`}><div className="header-inner"><Link className="brand" href="/" aria-label="NOVA home"><i/>NOVA</Link><nav className={`nav ${open?"open":""}`} aria-label="Main navigation">{links.map(([l,h])=><Link href={h} key={l} onClick={()=>setOpen(false)}>{l}</Link>)}</nav><div className="header-actions"><button className="icon-button search" aria-label="Search"><span/></button><button className="icon-button bag" onClick={openDrawer} aria-label={`Open cart, ${count} items`}><span/>{count>0&&<b>{count}</b>}</button><button className="menu-button" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}><i/><i/></button></div></div></header>}
