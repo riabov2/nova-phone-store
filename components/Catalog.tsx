@@ -3,13 +3,12 @@ import Link from "next/link";
 import { brandOrder, productsByBrand, type CatalogProduct } from "@/lib/catalog";
 
 function ProductCard({ product }: { product: CatalogProduct }) {
-  const detailsHref = `/product/${product.slug}`;
-  return <article className="catalog-card">
-    <div className="catalog-card-media">
-      <img src={product.image} alt={`Official ${product.model} product photography`} />
+  return <Link className="catalog-card" href={`/product/${product.slug}`} aria-label={`View ${product.model}`}>
+    <div className="catalog-card-media" style={{ background: product.images.card.background }}>
+      <img src={product.images.card.src} alt={product.images.card.alt} style={{ "--fit": product.images.card.fit, "--position": product.images.card.position ?? "center", "--mobile-fit": product.images.card.mobileFit ?? product.images.card.fit, "--mobile-position": product.images.card.mobilePosition ?? product.images.card.position ?? "center", "--scale": product.images.card.scale ?? 1 } as React.CSSProperties} />
     </div>
-    <div className="catalog-card-body"><div className="catalog-card-meta"><span>{product.brand}</span></div><h3>{product.model}</h3><p>{product.descriptor}</p>{product.storage && <small>{product.storage.join(" · ")}</small>}<Link className="button ghost" href={detailsHref}>View details</Link></div>
-  </article>;
+    <div className="catalog-card-body"><div className="catalog-card-meta"><span>{product.brand}</span></div><h3>{product.model}</h3><p>{product.description}</p><small>{product.storage.join(" · ")}</small><span className="button ghost">View details</span></div>
+  </Link>;
 }
 
 export default function Catalog() {

@@ -7,7 +7,7 @@ const featured = featuredSlugs.map(slug => catalogProducts.find(product => produ
 
 function HomeCard({ slug }: { slug: string }) {
   const product = catalogProducts.find(item => item.slug === slug)!;
-  return <article className="home-product-card"><img src={product.image} alt={`Official ${product.model} product photography`} /><span>{product.brand}</span><h3>{product.model}</h3><p>{product.descriptor}</p><Link href={`/product/${product.slug}`}>View details →</Link></article>;
+  return <Link className="home-product-card" href={`/product/${product.slug}`} aria-label={`View ${product.model}`}><span className="home-product-media" style={{ background: product.images.card.background }}><img src={product.images.card.src} alt={product.images.card.alt} style={{ "--fit": product.images.card.fit, "--position": product.images.card.position ?? "center", "--mobile-fit": product.images.card.mobileFit ?? product.images.card.fit, "--mobile-position": product.images.card.mobilePosition ?? product.images.card.position ?? "center", "--scale": product.images.card.scale ?? 1 } as React.CSSProperties} /></span><span>{product.brand}</span><h3>{product.model}</h3><p>{product.description}</p><b>View details →</b></Link>;
 }
 
 export default function StoreHome() {

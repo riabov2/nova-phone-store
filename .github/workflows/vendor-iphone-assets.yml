@@ -16,6 +16,15 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Prepare image manifest tooling
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install project dependencies
+        run: npm ci
+
       - name: Download and verify official product images
         shell: bash
         run: |
@@ -60,14 +69,19 @@ jobs:
           download_image \
             "https://image-us.samsung.com/us/smartphones/galaxy-s26-ultra/images/galaxy-s26-ultra-features-kv.jpg" \
             "public/products/galaxy-s26-ultra/card.jpg"
+          download_image "https://images.samsung.com/is/image/samsung/assets/us/smartphones/galaxy-s26-ultra/images/galaxy-s26-ultra-features-colors-durability-b.jpg" "public/products/galaxy-s26-ultra/colors.jpg"
+          download_image "https://images.samsung.com/is/image/samsung/assets/us/smartphones/galaxy-s26-ultra/compare/images/galaxy-s26-ultra-share-image.jpg" "public/products/galaxy-s26-ultra/design.jpg"
           mkdir -p "public/products/galaxy-z-fold7"
           download_image \
             "https://image-us.samsung.com/us/smartphones/galaxy-z-fold7/images/galaxy-z-fold7-features-kv.jpg" \
             "public/products/galaxy-z-fold7/card.jpg"
+          download_image "https://image-us.samsung.com/us/smartphones/galaxy-z-fold7/images/galaxy-z-fold7-share-image.jpg" "public/products/galaxy-z-fold7/design.jpg"
+          download_image "https://images.samsung.com/is/image/samsung/assets/us/smartphones/galaxy-z-fold7/images/galaxy-Z-crosslinking-banner-moohan-101625.jpg" "public/products/galaxy-z-fold7/lifestyle.jpg"
           mkdir -p "public/products/vivo-x300-pro"
           download_image \
             "https://asia-exstatic-vivofs.vivo.com/PSee2l50xoirPK7y/product/1770276743814/zip/img/pc/vivo-x300-pro.png.webp" \
             "public/products/vivo-x300-pro/card.webp"
+          download_image "https://asia-exstatic-vivofs.vivo.com/PSee2l50xoirPK7y/product/1770276743814/zip/img/wap/os.png" "public/products/vivo-x300-pro/software.png"
           mkdir -p "public/products/honor-x9d"
           download_image \
             "https://www.honor.com/content/dam/honor/common/product-list/product-series/honor-x9d/honor-x9d-red-list.png" \
@@ -80,6 +94,8 @@ jobs:
           download_image \
             "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/note/note40proplus5g/assets/pc/sec1/kv_pc/kv_1.webp" \
             "public/products/infinix-note-40-pro-plus-5g/card.webp"
+          download_image "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/note/note40proplus5g/assets/pc/sec2/img-phone-charge.webp" "public/products/infinix-note-40-pro-plus-5g/charging.webp"
+          download_image "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/note/note40proplus5g/assets/mb/sec2/img-camera.webp" "public/products/infinix-note-40-pro-plus-5g/camera.webp"
           mkdir -p "public/products/infinix-zero-40-5g"
           download_image \
             "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/zero/zero-40-5g/section-1/mb/new-kv-mb-v2.webp" \
@@ -100,14 +116,67 @@ jobs:
           download_image \
             "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/3f5c0cd26cf1cd44b020005fe94f8dbf.png" \
             "public/products/xiaomi-17-ultra/card.png"
+          download_image "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/8baabd4fc4255a2cf81636335b4cf0c1.png" "public/products/xiaomi-17-ultra/detail.png"
           mkdir -p "public/products/xiaomi-17-pro-max"
           download_image \
             "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/bb9e4a367f854221b60bb7b3b05e0173.png" \
             "public/products/xiaomi-17-pro-max/card.png"
+          download_image "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/5f56e61ddfba022886999937ff48e7fa.png" "public/products/xiaomi-17-pro-max/detail.png"
           mkdir -p "public/products/redmi-k80-pro"
           download_image \
             "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/c06730d1d2b34f09a7ee31c9b7559650.png" \
             "public/products/redmi-k80-pro/card.png"
+          download_image "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/86eb53bd70dbe20d9d4e8ec187a92dcc.png" "public/products/redmi-k80-pro/detail.png"
+
+      - name: Vendor role-aware product photography
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require("node:fs");
+          const path = require("node:path");
+          const { execFileSync } = require("node:child_process");
+          const ts = require("typescript");
+          const Module = module.constructor;
+          const sourcePath = path.resolve("lib/product-images.ts");
+          const javascript = ts.transpileModule(fs.readFileSync(sourcePath, "utf8"), {
+            compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+          }).outputText;
+          const compiled = new Module(sourcePath, module);
+          compiled.filename = sourcePath;
+          compiled.paths = module.paths;
+          compiled._compile(javascript, sourcePath);
+          const images = compiled.exports.productImages;
+          const roleOrder = ["card", "hero", "front", "back", "colors", "design", "camera", "display", "performance", "battery", "software"];
+          const extension = url => (new URL(url).pathname.match(/\.(png|webp|jpe?g)$/i)?.[1] || "jpg").replace("jpeg", "jpg");
+          const transformed = {};
+          for (const [slug, collection] of Object.entries(images)) {
+            const destination = path.join("public", "products", slug);
+            fs.mkdirSync(destination, { recursive: true });
+            const names = new Map();
+            let galleryIndex = 1;
+            for (const role of roleOrder) {
+              const photo = collection[role];
+              if (photo?.src?.startsWith("https://") && !names.has(photo.src)) names.set(photo.src, `${role}.${extension(photo.src)}`);
+            }
+            for (const photo of collection.gallery || []) {
+              if (photo.src.startsWith("https://") && !names.has(photo.src)) names.set(photo.src, `gallery-${String(galleryIndex++).padStart(2, "0")}.${extension(photo.src)}`);
+            }
+            for (const [url, filename] of names) {
+              const output = path.join(destination, filename);
+              execFileSync("curl", ["--fail", "--location", "--retry", "3", "--retry-all-errors", "--connect-timeout", "20", "--max-time", "180", "--user-agent", "Mozilla/5.0 NOVA-asset-vendor/2.0", "--output", output, url], { stdio: "inherit" });
+              if (fs.statSync(output).size < 10000) throw new Error(`Suspiciously small image: ${output}`);
+              const mime = execFileSync("file", ["--brief", "--mime-type", output], { encoding: "utf8" }).trim();
+              if (!mime.startsWith("image/")) throw new Error(`Not an image: ${output} (${mime})`);
+            }
+            const localize = photo => photo ? { ...photo, src: `/nova-phone-store/products/${slug}/${names.get(photo.src)}` } : photo;
+            transformed[slug] = { ...collection };
+            for (const role of roleOrder) if (collection[role]) transformed[slug][role] = localize(collection[role]);
+            transformed[slug].gallery = (collection.gallery || []).map(localize);
+          }
+          const generated = `export type ImageFit = "contain" | "cover";\nexport type ProductImage = { src: string; alt: string; fit?: ImageFit; position?: string; scale?: number; background?: string; mobileFit?: ImageFit; mobilePosition?: string };\nexport type ProductImages = { card: ProductImage; hero: ProductImage; front?: ProductImage; back?: ProductImage; colors?: ProductImage; design?: ProductImage; camera?: ProductImage; display?: ProductImage; performance?: ProductImage; battery?: ProductImage; software?: ProductImage; gallery: readonly ProductImage[]; sourcePage: string };\nexport const productImages = ${JSON.stringify(transformed, null, 2)} as const satisfies Record<string, ProductImages>;\n`;
+          fs.writeFileSync(sourcePath, generated);
+          NODE
 
       - name: Switch the storefront to local assets
         shell: bash
@@ -155,6 +224,16 @@ jobs:
               "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/3f5c0cd26cf1cd44b020005fe94f8dbf.png": 'catalogAssetPath("xiaomi-17-ultra", "card.png")',
               "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/bb9e4a367f854221b60bb7b3b05e0173.png": 'catalogAssetPath("xiaomi-17-pro-max", "card.png")',
               "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/c06730d1d2b34f09a7ee31c9b7559650.png": 'catalogAssetPath("redmi-k80-pro", "card.png")',
+              "https://images.samsung.com/is/image/samsung/assets/us/smartphones/galaxy-s26-ultra/images/galaxy-s26-ultra-features-colors-durability-b.jpg": 'catalogAssetPath("galaxy-s26-ultra", "colors.jpg")',
+              "https://images.samsung.com/is/image/samsung/assets/us/smartphones/galaxy-s26-ultra/compare/images/galaxy-s26-ultra-share-image.jpg": 'catalogAssetPath("galaxy-s26-ultra", "design.jpg")',
+              "https://image-us.samsung.com/us/smartphones/galaxy-z-fold7/images/galaxy-z-fold7-share-image.jpg": 'catalogAssetPath("galaxy-z-fold7", "design.jpg")',
+              "https://images.samsung.com/is/image/samsung/assets/us/smartphones/galaxy-z-fold7/images/galaxy-Z-crosslinking-banner-moohan-101625.jpg": 'catalogAssetPath("galaxy-z-fold7", "lifestyle.jpg")',
+              "https://asia-exstatic-vivofs.vivo.com/PSee2l50xoirPK7y/product/1770276743814/zip/img/wap/os.png": 'catalogAssetPath("vivo-x300-pro", "software.png")',
+              "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/note/note40proplus5g/assets/pc/sec2/img-phone-charge.webp": 'catalogAssetPath("infinix-note-40-pro-plus-5g", "charging.webp")',
+              "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/note/note40proplus5g/assets/mb/sec2/img-camera.webp": 'catalogAssetPath("infinix-note-40-pro-plus-5g", "camera.webp")',
+              "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/8baabd4fc4255a2cf81636335b4cf0c1.png": 'catalogAssetPath("xiaomi-17-ultra", "detail.png")',
+              "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/5f56e61ddfba022886999937ff48e7fa.png": 'catalogAssetPath("xiaomi-17-pro-max", "detail.png")',
+              "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/86eb53bd70dbe20d9d4e8ec187a92dcc.png": 'catalogAssetPath("redmi-k80-pro", "detail.png")',
           }
           for remote, local in replacements.items():
               if remote not in source:
@@ -163,8 +242,8 @@ jobs:
           catalog.write_text(source)
           PY
 
-          if grep -qE 'https://.+\.(jpg|png|webp)' lib/products.ts lib/catalog.ts; then
-            echo "External production image URL remains in lib/products.ts" >&2
+          if grep -qE 'https://.+\.(jpg|png|webp)' lib/products.ts lib/catalog.ts lib/product-images.ts; then
+            echo "External production image URL remains in product data" >&2
             exit 1
           fi
 
