@@ -6,46 +6,24 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./ProMaxHome.module.css";
+import { useCart } from "./CartProvider";
+import { formatPrice, iphone17ProMax, type FinishId, type Storage } from "@/lib/products";
+import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const HERO_IMAGE =
-  "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-cosmic-orange-250909_inline.jpg.large.jpg";
-const CAMERA_IMAGE =
-  "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-camera-close-up-250909_big.jpg.large.jpg";
-
-const finishes = [
-  { id: "deep-blue", name: "Deep Blue", swatch: "#1d2a3a" },
-  { id: "cosmic-orange", name: "Cosmic Orange", swatch: "#c96a30" },
-  { id: "silver", name: "Silver", swatch: "#d9d9d2" },
-] as const;
-
-const storagePrices = {
-  "256 GB": 1469,
-  "512 GB": 1719,
-  "1 TB": 1969,
-  "2 TB": 2469,
-} as const;
-
-type Storage = keyof typeof storagePrices;
-type Finish = (typeof finishes)[number]["id"];
-
-function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+const { image: HERO_IMAGE, cameraImage: CAMERA_IMAGE, finishes, prices: storagePrices } = iphone17ProMax;
 
 export default function ProMaxHome() {
   const heroRef = useRef<HTMLElement>(null);
   const heroVisualRef = useRef<HTMLDivElement>(null);
   const teardownRef = useRef<HTMLElement>(null);
   const [storage, setStorage] = useState<Storage>("256 GB");
-  const [finish, setFinish] = useState<Finish>("cosmic-orange");
+  const [finish, setFinish] = useState<FinishId>("cosmic-orange");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const { addItem, openDrawer } = useCart();
+  const router = useRouter();
 
   const selectedFinish = useMemo(
     () => finishes.find((item) => item.id === finish) ?? finishes[1],
@@ -198,7 +176,9 @@ export default function ProMaxHome() {
     return () => mm.revert();
   }, []);
 
-  const handleAdd = () => {
+  const handleAdd = (open = true) => {
+    addItem({ productSlug: iphone17ProMax.slug, name: iphone17ProMax.name, color: finish, storage, quantity, unitPrice: storagePrices[storage] });
+    if (open) openDrawer();
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   };
@@ -222,8 +202,8 @@ export default function ProMaxHome() {
 
         <div className={styles.heroVisual} ref={heroVisualRef}>
           <div className={styles.lightSweep} data-light-sweep />
-          <img src={HERO_IMAGE} alt="iPhone 17 Pro and Pro Max in Cosmic Orange" />
-          <span className={styles.imageNote}>Official Apple product imagery</span>
+          <img src={HERO_IMAGE} alt="iPhone 17 Pro Max in Cosmic Orange" />
+          <span className={styles.imageNote}>Conceptual product rendering</span>
         </div>
       </section>
 
@@ -276,7 +256,7 @@ export default function ProMaxHome() {
             <h2>Three 48MP Fusion cameras.</h2>
             <p>More room to frame, crop and get closer without cluttering the experience.</p>
           </div>
-          <img src={CAMERA_IMAGE} alt="Close-up of the iPhone 17 Pro camera system" />
+          <img src={CAMERA_IMAGE} alt="Close-up of the iPhone 17 Pro Max camera system" />
         </article>
 
         <article className={[styles.highlight, styles.displayHighlight].join(" ")}>
@@ -328,7 +308,7 @@ export default function ProMaxHome() {
                   aria-label={item.name}
                   aria-pressed={finish === item.id}
                 >
-                  <i style={{ background: item.swatch }} />
+                  <i style={{ background: item.hex }} />
                 </button>
               ))}
             </div>
@@ -358,10 +338,11 @@ export default function ProMaxHome() {
             <div className={styles.total}><span>Total</span><b>{formatPrice(storagePrices[storage] * quantity)}</b></div>
           </div>
 
-          <button className={styles.primaryButton} onClick={handleAdd}>
+          <button className={styles.primaryButton} onClick={() => handleAdd()}>
             {added ? "Configuration saved" : "Add to cart"}
           </button>
-          <p className={styles.configNote}>Cart wiring for this new Pro Max SKU can be connected after the page design is approved.</p>
+          <button className={styles.secondaryBuy} onClick={() => { handleAdd(false); router.push("/checkout"); }}>Buy now</button>
+          <p className={styles.configNote}>Free delivery. VAT included. Your configuration is saved securely on this device.</p>
         </div>
       </section>
 
@@ -371,11 +352,7 @@ export default function ProMaxHome() {
           <h2>Only the details you need.</h2>
         </div>
         <div className={styles.specList}>
-          <details><summary>Display <span>+</span></summary><p>6.9-inch Super Retina XDR OLED, ProMotion up to 120Hz, Always-On display.</p></details>
-          <details><summary>Performance <span>+</span></summary><p>A19 Pro with a 6-core GPU and vapor-chamber thermal architecture.</p></details>
-          <details><summary>Camera <span>+</span></summary><p>Three 48MP Fusion rear cameras plus an 18MP Center Stage front camera.</p></details>
-          <details><summary>Storage <span>+</span></summary><p>256GB, 512GB, 1TB or 2TB.</p></details>
-          <details><summary>Size <span>+</span></summary><p>163.4 × 78 × 8.75 mm. Weight: 231 g.</p></details>
+          {Object.entries(iphone17ProMax.specs).map(([label, value]) => <details key={label}><summary>{label} <span>+</span></summary><p>{value}</p></details>)}
         </div>
       </section>
 

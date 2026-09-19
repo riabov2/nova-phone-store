@@ -1,9 +1,0 @@
-import Image from "next/image";
-import phoneBack from "@/public/products/iphone-17/iphone-17-back.svg";
-import phoneFront from "@/public/products/iphone-17/iphone-17-front.svg";
-
-export default function PhoneVisual({ side = "front", priority = false, className = "" }: { side?: "front" | "back"; priority?: boolean; className?: string }) {
-  return <div className={`phone-visual ${className}`}>
-    <Image src={side === "front" ? phoneFront : phoneBack} alt={side === "front" ? "iPhone 17 front view" : "iPhone 17 in Mist Blue, rear view"} width={700} height={1400} priority={priority} sizes="(max-width: 600px) 70vw, 420px" />
-  </div>;
-}

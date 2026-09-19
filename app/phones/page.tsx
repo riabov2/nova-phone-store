@@ -1,7 +1,3 @@
-import type { Metadata } from "next";
-import ProductCard from "@/components/ProductCard";
-
-export const metadata: Metadata = { title: "Phones", description: "Discover NOVA’s premium smartphone collection." };
-export default function PhonesPage() {
-  return <div className="listing-page"><header><span className="eyebrow">THE NOVA COLLECTION</span><h1>Find your next phone.</h1><p>Exceptional design, performance and imaging.</p></header><div className="product-grid"><ProductCard/></div><section className="compare-strip" id="compare"><span>NEED HELP CHOOSING?</span><h2>One model.<br/>Five finishes. Two capacities.</h2><a href="mailto:hola@nova.example" className="text-link">Talk to a specialist →</a></section></div>;
-}
+import type { Metadata } from "next"; import Link from "next/link"; import { formatPrice, iphone17ProMax } from "@/lib/products";
+export const metadata: Metadata = { title: "iPhone 17 Pro Max", description: iphone17ProMax.description };
+export default function PhonesPage() { return <div className="focus-page"><div className="focus-copy"><span>{iphone17ProMax.eyebrow.toUpperCase()}</span><h1>One phone.<br />The definitive one.</h1><p>{iphone17ProMax.description}</p><strong>From {formatPrice(iphone17ProMax.prices["256 GB"])}</strong><div><Link className="button primary" href="/#configure">Configure</Link><Link className="button ghost" href="/#features">Explore</Link></div></div><div className="focus-device"><div className="device-back"><i /><i /><i /><b>PRO MAX</b></div></div></div>; }

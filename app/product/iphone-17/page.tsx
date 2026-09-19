@@ -1,5 +1,3 @@
-import type { Metadata } from "next";
-import ProductConfigurator from "@/components/ProductConfigurator";
-
-export const metadata: Metadata = { title: "Buy iPhone 17", description: "Configure iPhone 17: finish, storage and delivery." };
-export default function ProductPage() { return <ProductConfigurator/>; }
+import type { Metadata } from "next"; import ProMaxHome from "@/components/ProMaxHome";
+export const metadata: Metadata = { title: "Buy iPhone 17 Pro Max", description: "Configure iPhone 17 Pro Max finish, storage and quantity." };
+export default function ProductPage() { return <ProMaxHome />; }
