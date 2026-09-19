@@ -1,42 +1,35 @@
-# NOVA — premium smartphone store
+# NOVA — iPhone 17 Pro Max
 
-A production-ready, dark cinematic ecommerce experience for iPhone 17, built with Next.js App Router, React, TypeScript, GSAP and handcrafted responsive CSS.
+A focused, dark cinematic static storefront for Apple iPhone 17 Pro Max, built with Next.js App Router, React, TypeScript and GSAP.
 
-## Start locally
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
-
-## Quality commands
+## Quality checks
 
 ```bash
-npm run lint
 npm run typecheck
+npm run lint
 npm test
 npm run build
 ```
 
 ## Routes
 
-- `/` — immersive storefront, product stories, specifications and service benefits
-- `/phones` — catalogue
-- `/product/iphone-17` — gallery and product configurator
+- `/` — flagship product experience and configurator
+- `/phones` — focused product overview
+- `/product/iphone-17-pro-max` — product experience
 - `/cart` — persistent cart
-- `/checkout` — non-transactional demonstration checkout
+- `/checkout` — static demo checkout
 
-## Architecture
+Product data lives in `lib/products.ts`. Official Apple product photography is vendored into `public/products/iphone-17-pro-max/`. The cart persists in `localStorage`; checkout does not process payments.
 
-- `app/` — routes, SEO metadata and global design system
-- `components/` — navigation, commerce, gallery and storytelling sections
-- `lib/` — typed product and cart data
-- `public/products/iphone-17/` — local, original device illustrations
+## One-time image vendoring
 
-The cart is stored safely in `localStorage` (`nova-cart-v1`). Checkout does not process payments. Product facts and Spain pricing were based on Apple Spain's iPhone 17 technical specifications and purchase pages when the catalogue was authored; verify commercial details before launch.
+After the asset-vendor change lands on `main`, manually run **Vendor iPhone 17 Pro Max assets** once from GitHub Actions. The dispatch-only workflow verifies and stores the official product photography locally, switches the product model to `/nova-phone-store/products/iphone-17-pro-max/` paths, commits those changes to `main`, and deletes itself in that same commit. Until that import runs, the identical official Apple Newsroom files are used directly as temporary bootstrap sources.
 
-## Deployment
-
-Connect the repository to Vercel or run `npx vercel --prod`. No secrets are required for the current frontend-only demo.
+The project uses Next.js static export with the `/nova-phone-store` base path for GitHub Pages.
