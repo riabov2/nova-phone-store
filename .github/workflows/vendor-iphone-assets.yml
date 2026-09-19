@@ -1,0 +1,100 @@
+name: Vendor iPhone 17 Pro Max assets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download and verify official product images
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="public/products/iphone-17-pro-max"
+          mkdir -p "$destination"
+
+          download_image() {
+            local url="$1"
+            local output="$2"
+            curl --fail --location --retry 3 --retry-all-errors \
+              --connect-timeout 20 --max-time 180 \
+              --user-agent "Mozilla/5.0 NOVA-asset-vendor/1.0" \
+              --output "$output" "$url"
+
+            test -s "$output"
+            test "$(stat --format=%s "$output")" -gt 50000
+            file --brief --mime-type "$output" | grep --quiet '^image/'
+          }
+
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-cosmic-orange-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-hero.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-camera-close-up-250909_big.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-camera.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-color-lineup-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-finishes.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-TechWoven-Case-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-design.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-iOS-26-Liquid-Glass-Lock-Screen-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-display.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-Clear-Case-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-performance.jpg"
+
+      - name: Switch the storefront to local assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          product_file = Path("lib/products.ts")
+          source = product_file.read_text()
+          replacements = {
+              'officialProductImages.hero': 'productAssetPath("iphone-17-pro-max-hero.jpg")',
+              'officialProductImages.camera': 'productAssetPath("iphone-17-pro-max-camera.jpg")',
+              'officialProductImages.finishes': 'productAssetPath("iphone-17-pro-max-finishes.jpg")',
+              'officialProductImages.design': 'productAssetPath("iphone-17-pro-max-design.jpg")',
+              'officialProductImages.display': 'productAssetPath("iphone-17-pro-max-display.jpg")',
+              'officialProductImages.performance': 'productAssetPath("iphone-17-pro-max-performance.jpg")',
+          }
+          for remote_reference, local_reference in replacements.items():
+              if remote_reference not in source:
+                  raise SystemExit(f"Expected reference not found: {remote_reference}")
+              source = source.replace(remote_reference, local_reference)
+
+          start = source.index("// Temporary bootstrap sources.")
+          end = source.index("export const iphone17ProMax")
+          source = source[:start] + source[end:]
+          product_file.write_text(source)
+          PY
+
+          if grep -q 'newsroom/images/.\+\(jpg\|png\|webp\)' lib/products.ts; then
+            echo "External production image URL remains in lib/products.ts" >&2
+            exit 1
+          fi
+
+      - name: Remove this one-time workflow and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/vendor-iphone-assets.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Vendor iPhone 17 Pro Max product assets"
+          git push origin HEAD:main
