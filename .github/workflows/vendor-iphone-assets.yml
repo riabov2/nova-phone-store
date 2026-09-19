@@ -1,0 +1,180 @@
+name: Vendor iPhone 17 Pro Max assets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download and verify official product images
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="public/products/iphone-17-pro-max"
+          mkdir -p "$destination"
+
+          download_image() {
+            local url="$1"
+            local output="$2"
+            curl --fail --location --retry 3 --retry-all-errors \
+              --connect-timeout 20 --max-time 180 \
+              --user-agent "Mozilla/5.0 NOVA-asset-vendor/1.0" \
+              --output "$output" "$url"
+
+            test -s "$output"
+            test "$(stat --format=%s "$output")" -gt 10000
+            file --brief --mime-type "$output" | grep --quiet '^image/'
+          }
+
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-cosmic-orange-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-hero.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-camera-close-up-250909_big.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-camera.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-color-lineup-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-finishes.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-TechWoven-Case-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-design.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-iOS-26-Liquid-Glass-Lock-Screen-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-display.jpg"
+          download_image \
+            "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-Clear-Case-250909_inline.jpg.large_2x.jpg" \
+            "$destination/iphone-17-pro-max-performance.jpg"
+
+          # Catalog card photography from official manufacturer/CDN sources.
+          mkdir -p "public/products/galaxy-s26-ultra"
+          download_image \
+            "https://image-us.samsung.com/us/smartphones/galaxy-s26-ultra/images/galaxy-s26-ultra-features-kv.jpg" \
+            "public/products/galaxy-s26-ultra/card.jpg"
+          mkdir -p "public/products/galaxy-z-fold7"
+          download_image \
+            "https://image-us.samsung.com/us/smartphones/galaxy-z-fold7/images/galaxy-z-fold7-features-kv.jpg" \
+            "public/products/galaxy-z-fold7/card.jpg"
+          mkdir -p "public/products/vivo-x300-pro"
+          download_image \
+            "https://asia-exstatic-vivofs.vivo.com/PSee2l50xoirPK7y/product/1770276743814/zip/img/pc/vivo-x300-pro.png.webp" \
+            "public/products/vivo-x300-pro/card.webp"
+          mkdir -p "public/products/honor-x9d"
+          download_image \
+            "https://www.honor.com/content/dam/honor/common/product-list/product-series/honor-x9d/honor-x9d-red-list.png" \
+            "public/products/honor-x9d/card.png"
+          mkdir -p "public/products/tecno-camon-40-premier-5g"
+          download_image \
+            "https://d13pvy8xd75yde.cloudfront.net/global/phones/camon40/camon-40-premier-5g/assets/images-perf-game-cm8-white-1.png" \
+            "public/products/tecno-camon-40-premier-5g/card.png"
+          mkdir -p "public/products/infinix-note-40-pro-plus-5g"
+          download_image \
+            "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/note/note40proplus5g/assets/pc/sec1/kv_pc/kv_1.webp" \
+            "public/products/infinix-note-40-pro-plus-5g/card.webp"
+          mkdir -p "public/products/infinix-zero-40-5g"
+          download_image \
+            "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/zero/zero-40-5g/section-1/mb/new-kv-mb-v2.webp" \
+            "public/products/infinix-zero-40-5g/card.webp"
+          mkdir -p "public/products/infinix-gt-20-pro"
+          download_image \
+            "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/gt/gt20pro_v7/id/images/kv-pc.webp" \
+            "public/products/infinix-gt-20-pro/card.webp"
+          mkdir -p "public/products/oppo-find-x9-pro"
+          download_image \
+            "https://www.oppo.com/content/dam/oppo/common/mkt/v2-2/find-x9-series-en/listpage/find-x9-pro/480-600-white-v2.png" \
+            "public/products/oppo-find-x9-pro/card.png"
+          mkdir -p "public/products/oppo-find-x8-ultra"
+          download_image \
+            "https://www.oppo.com/content/dam/oppo_com/common/mkt/v2-2/cn-find-x8-series/find-x8-ultra/listpage/427-600-pink.png" \
+            "public/products/oppo-find-x8-ultra/card.png"
+          mkdir -p "public/products/xiaomi-17-ultra"
+          download_image \
+            "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/3f5c0cd26cf1cd44b020005fe94f8dbf.png" \
+            "public/products/xiaomi-17-ultra/card.png"
+          mkdir -p "public/products/xiaomi-17-pro-max"
+          download_image \
+            "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/bb9e4a367f854221b60bb7b3b05e0173.png" \
+            "public/products/xiaomi-17-pro-max/card.png"
+          mkdir -p "public/products/redmi-k80-pro"
+          download_image \
+            "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/c06730d1d2b34f09a7ee31c9b7559650.png" \
+            "public/products/redmi-k80-pro/card.png"
+
+      - name: Switch the storefront to local assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          product_file = Path("lib/products.ts")
+          source = product_file.read_text()
+          replacements = {
+              'officialProductImages.hero': 'productAssetPath("iphone-17-pro-max-hero.jpg")',
+              'officialProductImages.camera': 'productAssetPath("iphone-17-pro-max-camera.jpg")',
+              'officialProductImages.finishes': 'productAssetPath("iphone-17-pro-max-finishes.jpg")',
+              'officialProductImages.design': 'productAssetPath("iphone-17-pro-max-design.jpg")',
+              'officialProductImages.display': 'productAssetPath("iphone-17-pro-max-display.jpg")',
+              'officialProductImages.performance': 'productAssetPath("iphone-17-pro-max-performance.jpg")',
+          }
+          for remote_reference, local_reference in replacements.items():
+              if remote_reference not in source:
+                  raise SystemExit(f"Expected reference not found: {remote_reference}")
+              source = source.replace(remote_reference, local_reference)
+
+          start = source.index("// Temporary bootstrap sources.")
+          end = source.index("export const iphone17ProMax")
+          source = source[:start] + source[end:]
+          product_file.write_text(source)
+          PY
+
+          python3 <<'PY'
+          from pathlib import Path
+          catalog = Path("lib/catalog.ts")
+          source = catalog.read_text()
+          replacements = {
+              "https://image-us.samsung.com/us/smartphones/galaxy-s26-ultra/images/galaxy-s26-ultra-features-kv.jpg": 'catalogAssetPath("galaxy-s26-ultra", "card.jpg")',
+              "https://image-us.samsung.com/us/smartphones/galaxy-z-fold7/images/galaxy-z-fold7-features-kv.jpg": 'catalogAssetPath("galaxy-z-fold7", "card.jpg")',
+              "https://asia-exstatic-vivofs.vivo.com/PSee2l50xoirPK7y/product/1770276743814/zip/img/pc/vivo-x300-pro.png.webp": 'catalogAssetPath("vivo-x300-pro", "card.webp")',
+              "https://www.honor.com/content/dam/honor/common/product-list/product-series/honor-x9d/honor-x9d-red-list.png": 'catalogAssetPath("honor-x9d", "card.png")',
+              "https://d13pvy8xd75yde.cloudfront.net/global/phones/camon40/camon-40-premier-5g/assets/images-perf-game-cm8-white-1.png": 'catalogAssetPath("tecno-camon-40-premier-5g", "card.png")',
+              "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/note/note40proplus5g/assets/pc/sec1/kv_pc/kv_1.webp": 'catalogAssetPath("infinix-note-40-pro-plus-5g", "card.webp")',
+              "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/zero/zero-40-5g/section-1/mb/new-kv-mb-v2.webp": 'catalogAssetPath("infinix-zero-40-5g", "card.webp")',
+              "https://d3o31au25zfcly.cloudfront.net/newfileadmin/usp/gt/gt20pro_v7/id/images/kv-pc.webp": 'catalogAssetPath("infinix-gt-20-pro", "card.webp")',
+              "https://www.oppo.com/content/dam/oppo/common/mkt/v2-2/find-x9-series-en/listpage/find-x9-pro/480-600-white-v2.png": 'catalogAssetPath("oppo-find-x9-pro", "card.png")',
+              "https://www.oppo.com/content/dam/oppo_com/common/mkt/v2-2/cn-find-x8-series/find-x8-ultra/listpage/427-600-pink.png": 'catalogAssetPath("oppo-find-x8-ultra", "card.png")',
+              "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/3f5c0cd26cf1cd44b020005fe94f8dbf.png": 'catalogAssetPath("xiaomi-17-ultra", "card.png")',
+              "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/bb9e4a367f854221b60bb7b3b05e0173.png": 'catalogAssetPath("xiaomi-17-pro-max", "card.png")',
+              "https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/c06730d1d2b34f09a7ee31c9b7559650.png": 'catalogAssetPath("redmi-k80-pro", "card.png")',
+          }
+          for remote, local in replacements.items():
+              if remote not in source:
+                  raise SystemExit(f"Expected catalog image not found: {remote}")
+              source = source.replace(f'"{remote}"', local)
+          catalog.write_text(source)
+          PY
+
+          if grep -qE 'https://.+\.(jpg|png|webp)' lib/products.ts lib/catalog.ts; then
+            echo "External production image URL remains in lib/products.ts" >&2
+            exit 1
+          fi
+
+      - name: Remove this one-time workflow and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/vendor-iphone-assets.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Vendor iPhone 17 Pro Max product assets"
+          git push origin HEAD:main
