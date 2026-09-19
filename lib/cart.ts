@@ -1,10 +1,10 @@
-import type { ColorId, Storage } from "./products";
+import type { FinishId, Storage } from "./products";
 
 export type CartItem = {
   id: string;
-  productSlug: "iphone-17";
+  productSlug: "iphone-17-pro-max";
   name: string;
-  color: ColorId;
+  color: FinishId;
   storage: Storage;
   quantity: number;
   unitPrice: number;

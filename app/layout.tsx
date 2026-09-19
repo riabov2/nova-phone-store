@@ -7,9 +7,9 @@ import CartDrawer from "@/components/CartDrawer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nova.example"),
-  title: { default: "iPhone 17 | NOVA Premium Technology", template: "%s | NOVA" },
-  description: "Discover and configure iPhone 17 at NOVA. Premium technology, delivered across Spain.",
-  openGraph: { title: "iPhone 17 | NOVA", description: "Designed to go further.", type: "website" },
+  title: { default: "iPhone 17 Pro Max | NOVA", template: "%s | NOVA" },
+  description: "Discover and configure Apple iPhone 17 Pro Max at NOVA.",
+  openGraph: { title: "iPhone 17 Pro Max | NOVA", description: "Pro power. Max canvas.", type: "website" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
