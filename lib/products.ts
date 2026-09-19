@@ -1,4 +1,4 @@
-const asset = (name: string) => `/nova-phone-store/products/iphone-17-pro-max/${name}`;
+export const productAssetPath = (name: string) => `/nova-phone-store/products/iphone-17-pro-max/${name}`;
 
 // Temporary bootstrap sources. The one-time vendor workflow downloads these
 // official Apple images and replaces the URLs with basePath-safe local paths.
@@ -26,10 +26,6 @@ export const iphone17ProMax = {
     hero: officialProductImages.hero,
     camera: officialProductImages.camera,
     finishes: officialProductImages.finishes,
-    chassis: asset("chassis.svg"),
-    battery: asset("battery.svg"),
-    logicBoard: asset("logic-board.svg"),
-    cameraModule: asset("camera-module.svg"),
   },
   specs: {
     Display: "6.9-inch Super Retina XDR display with ProMotion up to 120Hz, Always-On and 3000 nits peak outdoor brightness.",

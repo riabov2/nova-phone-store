@@ -56,9 +56,9 @@ jobs:
           product_file = Path("lib/products.ts")
           source = product_file.read_text()
           replacements = {
-              'officialProductImages.hero': 'asset("iphone-17-pro-max-hero.jpg")',
-              'officialProductImages.camera': 'asset("iphone-17-pro-max-camera.jpg")',
-              'officialProductImages.finishes': 'asset("iphone-17-pro-max-finishes.jpg")',
+              'officialProductImages.hero': 'productAssetPath("iphone-17-pro-max-hero.jpg")',
+              'officialProductImages.camera': 'productAssetPath("iphone-17-pro-max-camera.jpg")',
+              'officialProductImages.finishes': 'productAssetPath("iphone-17-pro-max-finishes.jpg")',
           }
           for remote_reference, local_reference in replacements.items():
               if remote_reference not in source:

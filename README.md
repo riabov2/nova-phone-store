@@ -26,7 +26,7 @@ npm run build
 - `/cart` — persistent cart
 - `/checkout` — static demo checkout
 
-Product data lives in `lib/products.ts`. Official Apple exterior imagery and detailed internal component artwork live in `public/products/iphone-17-pro-max/`. The cart persists in `localStorage`; checkout does not process payments.
+Product data lives in `lib/products.ts`. Official Apple product photography is vendored into `public/products/iphone-17-pro-max/`. The cart persists in `localStorage`; checkout does not process payments.
 
 ## One-time image vendoring
 
