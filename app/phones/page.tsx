@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ProductCard from "@/components/ProductCard";
 
-export const metadata: Metadata = { title: "Teléfonos", description: "Descubre la selección de smartphones NOVA." };
+export const metadata: Metadata = { title: "Phones", description: "Discover NOVA’s premium smartphone collection." };
 export default function PhonesPage() {
-  return <div className="listing-page"><header><span className="eyebrow">La colección NOVA</span><h1>Encuentra el tuyo.</h1><p>Diseño, potencia y cámara. Sin concesiones.</p></header><div className="product-grid"><ProductCard/></div><section className="compare-strip" id="compare"><span>¿Necesitas ayuda para elegir?</span><h2>Un modelo.<br/>Cinco acabados. Dos capacidades.</h2><a href="mailto:hola@nova.example" className="text-link">Hablar con un especialista →</a></section></div>;
+  return <div className="listing-page"><header><span className="eyebrow">THE NOVA COLLECTION</span><h1>Find your next phone.</h1><p>Exceptional design, performance and imaging.</p></header><div className="product-grid"><ProductCard/></div><section className="compare-strip" id="compare"><span>NEED HELP CHOOSING?</span><h2>One model.<br/>Five finishes. Two capacities.</h2><a href="mailto:hola@nova.example" className="text-link">Talk to a specialist →</a></section></div>;
 }

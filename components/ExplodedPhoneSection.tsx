@@ -8,12 +8,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const layers = [
-  { className: "glass", label: "Ceramic Shield 2", detail: "Más resistente a los arañazos", n: "01" },
-  { className: "display", label: "Super Retina XDR", detail: "ProMotion hasta 120 Hz", n: "02" },
-  { className: "frame", label: "Marco de aluminio", detail: "Ligero y preciso", n: "03" },
-  { className: "battery", label: "Batería para todo el día", detail: "Hasta 30 h de vídeo", n: "04" },
-  { className: "chip", label: "Chip A19", detail: "Potencia de nueva generación", n: "05" },
-  { className: "camera", label: "Cámaras Fusion", detail: "Sistema dual de 48 Mpx", n: "06" },
+  { className: "glass", label: "Ceramic Shield 2", detail: "Enhanced scratch resistance", n: "01" },
+  { className: "display", label: "Super Retina XDR", detail: "ProMotion up to 120 Hz", n: "02" },
+  { className: "frame", label: "Aluminium frame", detail: "Light and precise", n: "03" },
+  { className: "battery", label: "All-day battery", detail: "Up to 30h video", n: "04" },
+  { className: "chip", label: "Chip A19", detail: "Next-generation performance", n: "05" },
+  { className: "camera", label: "Fusion cameras", detail: "Dual 48MP system", n: "06" },
 ];
 
 export default function ExplodedPhoneSection() {
@@ -31,8 +31,8 @@ export default function ExplodedPhoneSection() {
 
   return <section className="exploded" ref={root} aria-labelledby="inside-title">
     <div className="exploded-pin">
-      <div className="exploded-copy"><span className="eyebrow">Diseñado desde dentro</span><h2 id="inside-title">Cada capa.<br/><em>Una razón.</em></h2><p>Desliza para descubrir cómo cada componente trabaja en perfecta sintonía.</p></div>
-      <div className="exploded-core" aria-label="Vista ilustrada por capas del iPhone 17">
+      <div className="exploded-copy"><span className="eyebrow">ENGINEERED INSIDE OUT</span><h2 id="inside-title">Every layer.<br/><em>One purpose.</em></h2><p>Scroll to see precision components separate in perfect harmony.</p></div>
+      <div className="exploded-core" aria-label="Illustrated layered view of iPhone 17">
         {layers.map((layer, i) => <div className={`exploded-layer ${layer.className}`} key={layer.className} style={{ zIndex: 20 - i, "--i": i } as React.CSSProperties}>
           <span className="layer-shape">{layer.className === "chip" && <b>A19</b>}{layer.className === "camera" && <><i/><i/></>}</span>
           <span className={`layer-label ${i % 2 ? "label-bottom" : "label-top"}`}><small>{layer.n}</small><b>{layer.label}</b><em>{layer.detail}</em></span>

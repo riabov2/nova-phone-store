@@ -1,34 +1,6 @@
 "use client";
-
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "./CartProvider";
-
-const links = [
-  ["Teléfonos", "/phones"],
-  ["Características", "/#features"],
-  ["Comparar", "/phones#compare"],
-  ["Soporte", "/#support"],
-];
-
-export default function Header() {
-  const [open, setOpen] = useState(false);
-  const { count } = useCart();
-  return <header className="site-header">
-    <div className="header-inner">
-      <Link href="/" className="brand" aria-label="NOVA, inicio">NOVA<span>.</span></Link>
-      <nav id="main-nav" className={open ? "nav open" : "nav"} aria-label="Navegación principal">
-        {links.map(([label, href]) => <Link key={href} href={href} onClick={() => setOpen(false)}>{label}</Link>)}
-      </nav>
-      <div className="header-actions">
-        <Link href="/cart" className="cart-link" aria-label={`Cesta, ${count} artículos`}>
-          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7L6 7Zm3 0V5a3 3 0 0 1 6 0v2"/></svg>
-          {count > 0 && <span>{count}</span>}
-        </Link>
-        <button className="menu-button" type="button" aria-expanded={open} aria-controls="main-nav" aria-label="Abrir menú" onClick={() => setOpen(!open)}>
-          <i/><i/>
-        </button>
-      </div>
-    </div>
-  </header>;
-}
+const links = [["Phones","/phones"],["Features","/#features"],["Compare","/#compare"],["Support","/#support"]];
+export default function Header(){const [open,setOpen]=useState(false);const [scrolled,setScrolled]=useState(false);const {count,openDrawer}=useCart();useEffect(()=>{const fn=()=>setScrolled(scrollY>16);fn();addEventListener("scroll",fn,{passive:true});return()=>removeEventListener("scroll",fn)},[]);return <header className={`site-header ${scrolled?"scrolled":""}`}><div className="header-inner"><Link className="brand" href="/" aria-label="NOVA home"><i/>NOVA</Link><nav className={`nav ${open?"open":""}`} aria-label="Main navigation">{links.map(([l,h])=><Link href={h} key={l} onClick={()=>setOpen(false)}>{l}</Link>)}</nav><div className="header-actions"><button className="icon-button search" aria-label="Search"><span/></button><button className="icon-button bag" onClick={openDrawer} aria-label={`Open cart, ${count} items`}><span/>{count>0&&<b>{count}</b>}</button><button className="menu-button" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}><i/><i/></button></div></div></header>}

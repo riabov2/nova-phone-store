@@ -3,12 +3,15 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartProvider";
+import CartDrawer from "@/components/CartDrawer";
 
 export const metadata: Metadata = {
-  title: { default: "NOVA — iPhone 17", template: "%s — NOVA" },
-  description: "Descubre y configura el iPhone 17 en NOVA España.",
+  metadataBase: new URL("https://nova.example"),
+  title: { default: "iPhone 17 | NOVA Premium Technology", template: "%s | NOVA" },
+  description: "Discover and configure iPhone 17 at NOVA. Premium technology, delivered across Spain.",
+  openGraph: { title: "iPhone 17 | NOVA", description: "Designed to go further.", type: "website" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es"><body><CartProvider><a className="skip-link" href="#content">Saltar al contenido</a><Header/><main id="content">{children}</main><Footer/></CartProvider></body></html>;
+  return <html lang="en"><body><CartProvider><a className="skip-link" href="#content">Skip to content</a><Header/><main id="content">{children}</main><Footer/><CartDrawer/></CartProvider></body></html>;
 }

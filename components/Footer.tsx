@@ -1,12 +1,3 @@
 import Link from "next/link";
-
-export default function Footer() {
-  return <footer className="footer" id="support">
-    <div className="footer-top">
-      <div><Link href="/" className="brand">NOVA<span>.</span></Link><p>Tecnología excepcional.<br/>Elegida para ti.</p></div>
-      <div><h3>Comprar</h3><Link href="/phones">iPhone 17</Link><Link href="/product/iphone-17">Configurar</Link><Link href="/cart">Cesta</Link></div>
-      <div><h3>Ayuda</h3><a href="mailto:hola@nova.example">Contacto</a><a href="#delivery">Envíos</a><a href="#returns">Devoluciones</a></div>
-    </div>
-    <div className="footer-bottom"><span>© 2026 NOVA España</span><span>Privacidad · Términos · Cookies</span></div>
-  </footer>;
-}
+const cols=[['Shop',['Phones','Accessories','New arrivals']],['Support',['Contact','Shipping','Returns']],['Company',['About NOVA','Journal','Careers']],['Legal',['Warranty','Privacy','Terms']]];
+export default function Footer(){return <footer className="footer"><div className="footer-lead"><Link href="/" className="brand"><i/>NOVA</Link><h2>Technology,<br/>thoughtfully selected.</h2><p>Premium devices. Personal service.<br/>Delivered across Spain.</p></div><div className="footer-links">{cols.map(c=><div key={c[0]}><h3>{c[0]}</h3>{c[1].map((x,i)=><Link key={x} href={i===0&&c[0]==='Shop'?'/phones':'/#support'}>{x}</Link>)}</div>)}</div><div className="footer-bottom"><span>© 2026 NOVA Technology</span><span>Madrid · Spain / EU</span><span>Instagram &nbsp; X &nbsp; YouTube</span></div></footer>}

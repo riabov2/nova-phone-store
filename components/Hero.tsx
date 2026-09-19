@@ -1,17 +1,3 @@
-import Link from "next/link";
-import PhoneVisual from "./PhoneVisual";
-
-export default function Hero() {
-  return <section className="hero">
-    <div className="hero-glow"/>
-    <div className="hero-copy">
-      <p className="hero-kicker">NOVA presenta</p>
-      <h1>iPhone 17</h1>
-      <p className="hero-line">Brillante en todos<br/>los sentidos.</p>
-      <div className="button-row"><Link href="/product/iphone-17" className="button light">Comprar</Link><a href="#showcase" className="text-link">Descubrir <span>↓</span></a></div>
-    </div>
-    <PhoneVisual priority className="hero-phone" />
-    <div className="hero-reflection"/>
-    <p className="hero-note">Diseñado para destacar.<br/>Preparado para todo.</p>
-  </section>;
-}
+"use client";
+import Link from "next/link";import {useEffect,useRef} from "react";import gsap from "gsap";import PhoneVisual from "./PhoneVisual";
+export default function Hero(){const root=useRef<HTMLElement>(null);useEffect(()=>{if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const ctx=gsap.context(()=>{gsap.from(".hero-copy > *",{y:32,opacity:0,duration:.9,stagger:.12,ease:"power3.out"});gsap.from(".hero-device",{y:90,rotate:15,scale:.86,opacity:0,duration:1.5,ease:"power3.out"})},root);return()=>ctx.revert()},[]);return <section className="hero" ref={root}><div className="aurora"/><div className="hero-copy"><p className="overline">THE NEW STANDARD</p><h1>iPhone 17</h1><p className="hero-tag">Brilliant by design.</p><p className="hero-price">From €959</p><div className="actions"><Link className="btn primary" href="/product/iphone-17">Buy now</Link><a className="btn ghost" href="#features">Explore features <span>↘</span></a></div></div><div className="hero-product"><div className="orbit orbit-a"/><div className="orbit orbit-b"/><PhoneVisual priority className="hero-device"/><div className="hero-shadow"/></div><div className="hero-spec left"><b>6.3″</b><span>Super Retina XDR</span></div><div className="hero-spec right"><b>A19</b><span>Built for speed</span></div><a className="scroll-mark" href="#features">Scroll to discover <i>↓</i></a></section>}

@@ -8,7 +8,7 @@ export default function ProductCard() {
     <span className="eyebrow">{iphone17.eyebrow}</span>
     <h2>{iphone17.name}</h2>
     <p>{iphone17.tagline}</p>
-    <div className="swatches" aria-label="Cinco acabados disponibles">{iphone17.colors.map(c => <i key={c.id} style={{ background: c.hex }} title={c.name}/>)}</div>
-    <div className="product-card-bottom"><strong>Desde {formatPrice(iphone17.price["256 GB"])}</strong><Link className="button dark" href="/product/iphone-17">Comprar</Link></div>
+    <div className="swatches" aria-label="Five finishes available">{iphone17.colors.map(c => <i key={c.id} style={{ background: c.hex }} title={c.name}/>)}</div>
+    <div className="product-card-bottom"><strong>From {formatPrice(iphone17.price["256 GB"])}</strong><Link className="button dark" href="/product/iphone-17">Buy</Link></div>
   </article>;
 }
